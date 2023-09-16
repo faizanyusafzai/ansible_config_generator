@@ -1,0 +1,28 @@
+---
+- name: Generate Configuration Files
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Create configs directory
+      ansible.builtin.file:
+        path: configs
+        state: directory
+
+    - name: Set backup_for variable
+      ansible.builtin.set_fact:
+        backup_for: "{{ backup_for }}"
+      when: item.value == 'backup'
+      loop: "{{ node_vars | dict2items }}"
+
+    - name: Generate configuration files
+      ansible.builtin.template:
+        src: templates/config_template.j2
+        dest: "configs/config_{{ item.key }}.conf"
+      loop: "{{ node_vars | dict2items }}"
+      vars:
+        role: "{{ item.value }}"
+        node_id: "{{ item.key | regex_replace('node', '') }}"
+        backup_for: "{{ backup_for }}"
+        node_id_str: "{{ item.key }}"
+      when: item.value in ['leader', 'worker', 'backup']
+

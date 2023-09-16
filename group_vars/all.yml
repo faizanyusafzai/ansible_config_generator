@@ -1,0 +1,14 @@
+node_vars:
+  node1: leader
+  node2: worker
+  node3: worker
+  node4: worker
+  node5: backup
+
+backup_for:
+  node1: ""
+  node2: node1
+  node3: node1
+  node4: node1
+  node5: node1
+
